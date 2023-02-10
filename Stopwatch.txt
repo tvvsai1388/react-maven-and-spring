@@ -1,0 +1,146 @@
+stopwatch.jsx
+
+import React, {useState,useEffect} from 'react';
+import "./Stopwatch.css";
+const Stopwatch = () => {
+    const [time , setTime] = useState(0);
+    const [isRunning , setIsRunning] = useState(false);
+    const [isPaused , setIsPaused] = useState(false);
+    const startStopwatch = () => {
+        setIsRunning(true);
+    }
+    const pauseStopwatch = () => {
+        setIsRunning(false);
+        setIsPaused(true);
+    }
+    const resumeStopwatch = () => {
+        setIsRunning(true);
+        setIsPaused(false);
+    } 
+    const resetStopwatch = () => {
+        setTime(0);
+        setIsRunning(false);
+        setIsPaused(false);
+    }
+    useEffect(()=>{
+        let interval = null;
+        if(isRunning){
+            interval = setInterval(()=>{
+                setTime((time) => time+1);
+            },1000)
+        }else if(!isRunning && time !== 0){
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    },[isRunning,time]);
+    const formattedTime = (()=> {
+        const hours = Math.floor(time/3600);
+        const minutes = Math.floor((time%3600)/60);
+        const seconds = time%60;
+        return `${hours < 10 ? `0${hours}` : hours}:${minutes < 10 ? `0${minutes}`: minutes }:${seconds < 10 ? `0${seconds}`: seconds}`;
+
+    })();
+    return (
+        <div>
+            <h1>React Stopwatch</h1>
+            <p data-testid="time">{formattedTime}</p>
+            <div>
+            {!isRunning && !isPaused ? (
+            <button data-testid="start" onClick={startStopwatch}>
+                Start
+            </button>
+
+            ) : null}
+            {!isRunning &&  isPaused ? (
+                <button data-testid="resume" onClick={resumeStopwatch}>
+                    Resume
+                </button>
+            ) : null}
+            {isRunning ? (
+                <button data-testid="pause" onClick={pauseStopwatch}>
+                    Pause
+                </button>
+            ): null}
+            {!isRunning  && time !==0  ? (
+                <button data-testid="reset" onClick={resetStopwatch}>
+                    Reset
+                </button>
+            ) : 
+            (
+                <button data-testid="reset" onClick={resetStopwatch} disabled>
+                    Reset
+                </button>
+            )
+            }
+            {/* {isRunning && !isPaused ? (<button data-testid="reset" onClick={resetStopwatch}>
+                Reset
+            </button>): null} */}
+            </div>
+        </div>
+    );
+}
+
+export default Stopwatch;
+
+
+stopwatch.css
+
+div{
+    top: 100;
+    align-items: center;
+    background-color: white;
+    justify-content: center;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    bottom: 100;
+    width: 90%;
+    height: 30%;
+}
+p{
+    font-size: 38px;
+}
+.buttons{
+    display:flex !important;
+    flex-direction: row !important;
+}
+button{
+    padding-left: 20px;
+    padding-right:20px;
+    padding-top: 5px;
+    padding-bottom:5px;
+    margin-right: 10px;
+}
+
+app.js
+
+import React from 'react';
+import './App.css';
+import Stopwatch from "./components/Stopwatch/Stopwatch";
+
+function App() {
+  return (
+    <div className="App">
+      <Stopwatch />
+    </div>
+  );
+}
+
+export default App;
+
+
+app.css
+
+
+
+.App{
+  align-items: center;
+  justify-content: center;
+  background-color: skyblue;
+  display: flex;
+  flex-direction: column;
+  border-radius: 25px;
+}
